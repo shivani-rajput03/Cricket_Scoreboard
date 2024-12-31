@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cricket Match Summary</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 10px;
+        }
+        .container {
+            width: 100%;
+            max-width: 800px;
+            margin: auto;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+        }
+        th {
+            background-color: #f4f4f4;
+        }
+        button {
+            padding: 10px 15px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Cricket Match Summary</h2>
+        <form id="dataInputForm">
+            <div class="form-group">
+                <label for="playerType">Select Type:</label>
+                <select id="playerType" required>
+                    <option value="batsman">Batsman</option>
+                    <option value="bowler">Bowler</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="playerName">Name:</label>
+                <input type="text" id="playerName" required>
+            </div>
+            <div id="batsmanDetails" style="display: none;">
+                <div class="form-group">
+                    <label for="ones">Ones:</label>
+                    <input type="number" id="ones" value="0">
+                </div>
+                <div class="form-group">
+                    <label for="twos">Twos:</label>
+                    <input type="number" id="twos" value="0">
+                </div>
+                <div class="form-group">
+                    <label for="threes">Threes:</label>
+                    <input type="number" id="threes" value="0">
+                </div>
+                <div class="form-group">
+                    <label for="fours">Fours:</label>
+                    <input type="number" id="fours" value="0">
+                </div>
+                <div class="form-group">
+                    <label for="sixes">Sixes:</label>
+                    <input type="number" id="sixes" value="0">
+                </div>
+                <div class="form-group">
+                    <label for="balls">Balls Played:</label>
+                    <input type="number" id="balls" required>
+                </div>
+            </div>
+            <div id="bowlerDetails" style="display: none;">
+                <div class="form-group">
+                    <label for="runsGiven">Runs Given:</label>
+                    <input type="number" id="runsGiven" required>
+                </div>
+                <div class="form-group">
+                    <label for="overs">Overs:</label>
+                    <input type="number" id="overs" required>
+                </div>
+                <div class="form-group">
+                    <label for="wickets">Wickets Taken:</label>
+                    <input type="number" id="wickets" required>
+                </div>
+            </div>
+            <button type="submit">Add Player</button>
+        </form>
+        <h3>Batsmen Details</h3>
+        <table id="batsmanTable">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Runs</th>
+                    <th>Balls</th>
+                    <th>Fours</th>
+                    <th>Sixes</th>
+                    <th>Strike Rate</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+        <h3>Bowlers Details</h3>
+        <table id="bowlerTable">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Overs</th>
+                    <th>Runs</th>
+                    <th>Wickets</th>
+                    <th>Economy</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+    <script>
+        const dataInputForm = document.getElementById('dataInputForm');
+        const playerType = document.getElementById('playerType');
+        const batsmanDetails = document.getElementById('batsmanDetails');
+        const bowlerDetails = document.getElementById('bowlerDetails');
+        const batsmanTable = document.getElementById('batsmanTable').querySelector('tbody');
+        const bowlerTable = document.getElementById('bowlerTable').querySelector('tbody');
+        
+        let batsmen = [];
+        let bowlers = [];
+
+        playerType.addEventListener('change', () => {
+            batsmanDetails.style.display = playerType.value === 'batsman' ? 'block' : 'none';
+            bowlerDetails.style.display = playerType.value === 'bowler' ? 'block' : 'none';
+        });
+
+        dataInputForm.addEventListener('submit', (event) => {
+            event.preventDefault();
+            const name = document.getElementById('playerName').value;
+
+            if (playerType.value === 'batsman') {
+                const ones = parseInt(document.getElementById('ones').value);
+                const twos = parseInt(document.getElementById('twos').value);
+                const threes = parseInt(document.getElementById('threes').value);
+                const fours = parseInt(document.getElementById('fours').value);
+                const sixes = parseInt(document.getElementById('sixes').value);
+                const balls = parseInt(document.getElementById('balls').value);
+
+                const runs = ones + twos * 2 + threes * 3 + fours * 4 + sixes * 6;
+                const strikeRate = ((runs / balls) * 100).toFixed(2);
+
+                batsmen.push({ name, runs, balls, fours, sixes, strikeRate });
+
+                batsmanTable.innerHTML += `<tr>
+                    <td>${name}</td>
+                    <td>${runs}</td>
+                    <td>${balls}</td>
+                    <td>${fours}</td>
+                    <td>${sixes}</td>
+                    <td>${strikeRate}</td>
+                </tr>`;
+            } else if (playerType.value === 'bowler') {
+                const runsGiven = parseInt(document.getElementById('runsGiven').value);
+                const overs = parseFloat(document.getElementById('overs').value);
+                const wickets = parseInt(document.getElementById('wickets').value);
+                const economy = (runsGiven / overs).toFixed(2);
+
+                bowlers.push({ name, overs, runsGiven, wickets, economy });
+
+                bowlerTable.innerHTML += `<tr>
+                    <td>${name}</td>
+                    <td>${overs}</td>
+                    <td>${runsGiven}</td>
+                    <td>${wickets}</td>
+                    <td>${economy}</td>
+                </tr>`;
+            }
+
+            dataInputForm.reset();
+            batsmanDetails.style.display = 'none';
+            bowlerDetails.style.display = 'none';
+        });
+    </script>
+</body>
+</html>
